@@ -1,7 +1,4 @@
 """
-Created on Mon Dec 21 14:44:04 2020
-
-@author: theknight
 """
 
 def conplot(veloc):
