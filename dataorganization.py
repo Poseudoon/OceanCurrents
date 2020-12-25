@@ -4,7 +4,6 @@ reads data and calculates
 
 import os.path
 import numpy as np
-#from geopy import distance
 
 
 def datareader(datanumber):
@@ -33,36 +32,38 @@ def datareader(datanumber):
 
 def dataconverter(datarange):
     """Converts data from datareader into usable data for contourplot
+    Args: datarange: the indices from the data files wich data
+                     is to be extracted
     """
-
+# define value arrays
     deccords = []
     distance = []
     lats = []
     lons = []
     depths = []
-    uvelocs = np.array([])
-    vvelocs = np.array([])
+    uvelocs = []
+    vvelocs = []
     maxveloc = 0
 
+# save data from datarange in value arrays
     for datanumber in datarange:
         if datanumber == 40:
             continue
         else:
             lat, lon, currentdata = datareader(datanumber)
-            depth = np.transpose(currentdata)[0]
+# depth = np.transpose(currentdata)[0]
             uveloc = np.transpose(currentdata)[1]
             vveloc = np.transpose(currentdata)[2]
-            #depths.append(depth)
-            np.append(vvelocs, np.array(vveloc), axis=0)
-            np.append(uvelocs, uveloc, axis=0)
+            vvelocs.append(vveloc.tolist())
+            uvelocs.append(uveloc.tolist())
             lats.append(lat.split(" "))
             lons.append(lon.split(" "))
 
+# find velocity array with most items
             if len(vveloc) > maxveloc:
                 maxveloc = len(vveloc)
 
-    print(np.array(vveloc))
-
+# convert coordinates to decimal degree
     for i in range(0, len(datarange)):
         lats[i][0] = lats[i][0].strip("°N")
         lons[i][0] = lons[i][0].strip("°W")
@@ -73,20 +74,25 @@ def dataconverter(datarange):
         declon = float(lons[i][0]) + float(lons[i][1]) / 60
         deccords.append((declat, declon))
 
-#        if len(vvelocs[i]) < maxveloc:
-#            difference = maxveloc - len(vvelocs[i])
+# fill short velocity arrays with filler constants (ground)
+        if len(vvelocs[i]) < maxveloc:
+            difference = maxveloc - len(vvelocs[i])
+            vvelocs[i] = np.append(np.array(vvelocs[i]),
+                                   (np.ones(difference) * -1000))
+            uvelocs[i] = np.append(np.array(uvelocs[i]),
+                                   (np.ones(difference) * -1000))
+    uvelocys = np.transpose(uvelocs)
+    vvelocys = np.transpose(vvelocs)
 
-
+# calculate distance between measurement points
     for i in range(0, len(datarange)-1):
-        distance.append(np.sqrt(((deccords[i+1][0] - deccords[i][0]) ** 2 + (deccords[i+1][1] - deccords[i][1]) ** 2)))
-        print(distance[i])
+        distance.append(np.sqrt(((deccords[i+1][0] - deccords[i][0]) ** 2 +
+                                 (deccords[i+1][1] - deccords[i][1]) ** 2)))
         distance[i] = 2 * np.pi * 6371000 * distance[i] / 360
 
-    return depths, uvelocs, vvelocs, distance
+    return depths, uvelocys, vvelocys, distance
 
 
-ds, us, vs, dcs = dataconverter((31, 32))
-#print("depths:", ds)
-#print("uvelocs:", us)
-#print("uvelocs2:", len(vs[1]))
-#print("distance:", dcs)
+ds, us, vs, dcs = dataconverter((31, 32, 33, 34, 35, 36, 37, 38))
+print("uvelocs:", us)
+print("distances: ", dcs)
