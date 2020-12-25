@@ -1,7 +1,7 @@
 Filename    = ../processed/046
 Date        = 2018/ 4/25
 Start_Time  =  0:45:21
-Start_Lat   = 47°N  6.0576'
+Start_Lat   = 47°N 6.0576'
 Start_Lon   =  42°W 53.6520'
 Deviation   = 0.000000
 Columns     = z:u:v:ev
