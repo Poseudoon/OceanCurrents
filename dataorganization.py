@@ -4,7 +4,6 @@ reads data and calculates
 
 import os.path
 import numpy as np
-from scipy.interpolate import interp1d
 
 
 def datareader(datanumber):
@@ -82,9 +81,9 @@ def dataconverter(datarange):
         if len(vvelocs[i]) < maxveloc:
             difference = maxveloc - len(vvelocs[i])
             vvelocs[i] = np.append(np.array(vvelocs[i]),
-                                   (np.ones(difference) * -1000))
+                                   (np.ones(difference) * -1))
             uvelocs[i] = np.append(np.array(uvelocs[i]),
-                                   (np.ones(difference) * -1000))
+                                   (np.ones(difference) * -1))
     uvelocys = np.transpose(uvelocs)
     vvelocys = np.transpose(vvelocs)
 
@@ -95,66 +94,3 @@ def dataconverter(datarange):
         distance[i] = 2 * np.pi * 6371000 * distance[i] / 360
 
     return depths, uvelocys, vvelocys, distance
-
-
-def interpolator(mat, distance):
-    """
-        Interpoltes the matrix mat and returns the matrix newmat with steady
-        steps in distance of the smallest distance.
-    """
-
-# calculate the place of each meassurement relative to the whole yourney of the
-# ship
-    gesdistance = np.zeros(len(distance)+1)
-    gesdis = distance[0]
-    print("wdth: ", mat.size/len(mat))
-    print("length: ", len(mat))
-    print("mat: ", mat[0, :])
-    print("gesdistance: ", gesdistance[0])
-    for i in range(1, len(distance)+1):
-        gesdistance[i] = gesdistance[i-1] + distance[i-1]
-        if i < len(distance):
-            gesdis = gesdis + distance[i]
-        print("gesdis: ", (i)*1205876/len(distance))
-        print("gesdistance: ", gesdistance[i])
-
-# calculates the minimum distance for number of points of the interpolation
-    mini = distance[0]
-    for i in range(len(distance)):
-        if distance[i] < mini:
-            mini = distance[i]
-
-#
-    newmat = np.zeros((len(mat), int(gesdis/mini)))
-
-    point = -1
-    wth = 0
-    xmed = 0
-    for leng in range(len(newmat)):
-        print("mat: ", mat[leng, :-1])
-        newveloc = interp1d(gesdistance, mat[leng, :], kind='cubic')
-        for wth in range(int(gesdis/mini)):
-            if gesdistance[point] <= xmed:
-                point += 1
-#            wth += 1
-#            xmed = wth*gesdis/mini
-#            print("length: ", leng)
-#            print("width: ", wth)
-#            print("punkt: ", wth*mini)
-            newmat[leng, wth] = newveloc(wth*mini)
-#        dminus = xmed-gesdistance[point-1]
-#        delta = gesdistance[point]-xmed
-#        for leng in range(len(newmat)):
-#            newmat[wth, leng] = delta/(dminus+delta)*mat[point-1, leng]+dminus/(dminus+delta)*mat[point, leng]
-"""
-    for wth in range(1, mat.size/len(mat)-1):
-        for leng in range(len(mat)):
-            xmed = wth*gesdis/len(mat)
-            if gesdistance[wth-1] < wth*xmed:
-                newmat[wth, leng] = (1-(wth*xmed - gesdistance[wth])/(wth*xmed-gesdistance[wth]+wth*xmed-gesdistance[wth+1]))
-"""
-
-ds, us, vs, dcs = dataconverter(range(31, 54))
-print("uvelocs:", us)
-print("distances: ", dcs)
-interpolator(us, dcs)
