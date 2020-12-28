@@ -3,9 +3,9 @@
 """
 
 import numpy as np
-import matplotlib.mlab as ml
 from scipy.interpolate import interp1d
 from matplotlib import pyplot as plt
+from matplotlib import ticker as ti
 
 
 def interpolator(mat, distance):
@@ -37,12 +37,17 @@ def interpolator(mat, distance):
         newveloc = interp1d(gesdistance, mat[leng, :], kind="linear")
         for wth in range(int(gesdis/mini)):
             newmat[leng, wth] = newveloc(wth*mini)
+    for wdth in range(int(gesdis/mini)):
+        newvelocdepth = interp1d(np.append(np.arange(0, 458, 20), 458), np.append(newmat[::20, wdth], newmat[457, wdth]), kind="linear")
+        for le in range(len(newmat)):
+            newmat[le, wdth] = newvelocdepth(le)
+
     return np.flip(newmat)
 
 
 def conplot(veloc, direction):
 
-#    plt.xlim(0, 278)
+    plt.xlim(0, 278)
     if direction == "u":
         cs = plt.contourf(veloc, levels=np.arange(-0.4, 0.85, 0.01),
                           cmap="jet", extend='both')
@@ -51,6 +56,8 @@ def conplot(veloc, direction):
                           cmap="jet", extend='both')
     plt.colorbar(cs)
     cs.cmap.set_under('grey')
-#    cs.changed()
+#    plt.axis.set(xlim=(0, 50), ylim=(-3000, 0))
+#    set_xlim(0, 5000)
+#    plt.axes.Axes.set_xscale(2000, "linear")
     plt.axis()
     plt.show()
