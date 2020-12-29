@@ -40,7 +40,6 @@ def dataconverter(datarange):
     distance = []
     lats = []
     lons = []
-    depths = []
     uvelocs = []
     vvelocs = []
     maxveloc = 0
@@ -51,7 +50,6 @@ def dataconverter(datarange):
             continue
         else:
             lat, lon, currentdata = datareader(datanumber)
-# depth = np.transpose(currentdata)[0]
             uveloc = np.transpose(currentdata)[1]
             vveloc = np.transpose(currentdata)[2]
 
@@ -63,6 +61,7 @@ def dataconverter(datarange):
 # find velocity array with most items
             if len(vveloc) > maxveloc:
                 maxveloc = len(vveloc)
+                maxdepth = np.transpose(currentdata)[0]
 
 
 # convert coordinates to decimal degree
@@ -84,6 +83,7 @@ def dataconverter(datarange):
                                    (np.ones(difference) * -1))
             uvelocs[i] = np.append(np.array(uvelocs[i]),
                                    (np.ones(difference) * -1))
+    declons = [deccords[0][1], deccords[-1][1]]
     uvelocys = np.transpose(uvelocs)
     vvelocys = np.transpose(vvelocs)
 
@@ -93,4 +93,4 @@ def dataconverter(datarange):
                                  (deccords[i+1][1] - deccords[i][1]) ** 2)))
         distance[i] = 2 * np.pi * 6371000 * distance[i] / 360
 
-    return depths, uvelocys, vvelocys, distance
+    return maxdepth[-1], uvelocys, vvelocys, distance, declons

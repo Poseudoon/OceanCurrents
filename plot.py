@@ -45,7 +45,7 @@ def interpolator(mat, distance):
     return np.flip(newmat)
 
 
-def conplot(veloc, direction):
+def conplot(veloc, direction, maxdepth, lons):
 
     plt.xlim(0, 278)
     if direction == "u":
@@ -56,6 +56,9 @@ def conplot(veloc, direction):
                           cmap="jet", extend='both')
     plt.colorbar(cs)
     cs.cmap.set_under('grey')
-    plt.xticks([50, 100, 150, 200, 250], [36, 38, 40, 42, 44])
-    plt.yticks([58, 158, 258, 358, 458], [-4000, -3000, -2000, -1000, 0])
+    plt.xticks([(36-lons[0])*278/(lons[1]-lons[0]), (38-lons[0])*278/(lons[1]-lons[0]), (40-lons[0])*278/(lons[1]-lons[0]), (42-lons[0])*278/(lons[1]-lons[0]), (44-lons[0])*278/(lons[1]-lons[0])], ["36°", "38°", "40°", "42°", "44°"])
+    plt.yticks([458-4000*458/maxdepth, 458-3000*458/maxdepth, 458-2000*458/maxdepth, 458-1000*458/maxdepth, 458], [-4000, -3000, -2000, -1000, 0])
+    plt.text(350, 350, "velocity in m/s, N-S", fontsize=14, rotation=270)
+    plt.xlabel("West-Longitude", fontsize=16)
+    plt.ylabel("Depth in [m]", fontsize=16)
     plt.show()
