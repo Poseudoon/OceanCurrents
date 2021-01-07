@@ -57,7 +57,6 @@ def dataconverter(datarange):
             uvelocs.append(uveloc.tolist())
             lats.append(lat.split(" "))
             lons.append(lon.split(" "))
-
 # find velocity array with most items
             if len(vveloc) > maxveloc:
                 maxveloc = len(vveloc)
@@ -80,9 +79,9 @@ def dataconverter(datarange):
         if len(vvelocs[i]) < maxveloc:
             difference = maxveloc - len(vvelocs[i])
             vvelocs[i] = np.append(np.array(vvelocs[i]),
-                                   (np.ones(difference) * -1))
+                                   (np.ones(difference) * -2))
             uvelocs[i] = np.append(np.array(uvelocs[i]),
-                                   (np.ones(difference) * -1))
+                                   (np.ones(difference) * -2))
     declons = [deccords[0][1], deccords[-1][1]]
     uvelocys = np.transpose(uvelocs)
     vvelocys = np.transpose(vvelocs)
